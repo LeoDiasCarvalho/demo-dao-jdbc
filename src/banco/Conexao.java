@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.demo_dao_jdbc.banco;
+package banco;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.demo_dao_jdbc.banco;
+package banco;
 
 /**
  * @author leo_dias
