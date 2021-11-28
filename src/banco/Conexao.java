@@ -17,47 +17,44 @@ import java.util.Properties;
  *
  */
 public class Conexao {
-	
+
 	private static Connection conexao = null;
-	
+
 	public static Connection Conectar() {
-		if(conexao == null) {
+		if (conexao == null) {
 			try {
 				Properties props = lerArquivo();
 				String url = props.getProperty("dburl");
 				conexao = DriverManager.getConnection(url, props);
-			}
-			catch(SQLException e) {
+			} catch (SQLException e) {
 				throw new BancoException(e.getMessage());
 			}
 		}
 		return conexao;
 	}
-	
+
 	public static void desconectar() {
-		if(conexao != null) {
+		if (conexao != null) {
 			try {
 				conexao.close();
-			}
-			catch(SQLException e) {
+			} catch (SQLException e) {
 				throw new BancoException(e.getMessage());
 			}
 		}
 	}
-	
+
 	private static Properties lerArquivo() {
-		try(FileInputStream fis = new FileInputStream("banco.properties")){
+		try (FileInputStream fis = new FileInputStream("banco.properties")) {
 			Properties props = new Properties();
 			props.load(fis);
 			return props;
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			throw new BancoException(e.getMessage());
 		}
 	}
-	
+
 	public static void FechamentoStatement(Statement st) {
-		if(st != null) {
+		if (st != null) {
 			try {
 				st.close();
 			} catch (SQLException e) {
@@ -65,7 +62,7 @@ public class Conexao {
 			}
 		}
 	}
-	
+
 	public static void FechamentoResultSet(ResultSet rs) {
 		if(rs != null) {
 			try {

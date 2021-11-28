@@ -3,6 +3,7 @@
  */
 package model.dao;
 
+import banco.Conexao;
 import model.dao.impl.SellerDaoJDBC;
 
 /**
@@ -12,6 +13,6 @@ import model.dao.impl.SellerDaoJDBC;
 public class DaoFactory {
 
 	public static SellerDao createSellerDao() {
-		return new SellerDaoJDBC();
+		return new SellerDaoJDBC(Conexao.Conectar());
 	}
 }
