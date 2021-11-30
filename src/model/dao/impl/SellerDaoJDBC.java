@@ -22,56 +22,51 @@ import model.entities.Seller;
  * @author leo_dias
  *
  */
-public class SellerDaoJDBC implements SellerDao{
-	
+public class SellerDaoJDBC implements SellerDao {
+
 	// fazendo a dependencia com a conexao com o banco de dados
 	private Connection conexao;
-	
+
 	public SellerDaoJDBC(Connection conexao) {
 		this.conexao = conexao;
 	}
 
 	@Override
 	public void insert(Seller obj) {
-		
+
 	}
 
 	@Override
 	public void upDate(Seller obj) {
-		
-		
+
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		
-		
+
 	}
 
 	@Override
 	public Seller findById(Integer id) {
-		
+
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		try {
-			st = conexao.prepareStatement("SELECT seller.*,department.Name as DepName "
-                                         + "FROM seller INNER JOIN department "
-                                         + "ON seller.DepartmentId = department.Id "
-                                         + "WHERE seller.Id = ? ");
+			st = conexao.prepareStatement(
+					"SELECT seller.*,department.Name as DepName " + "FROM seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id " + "WHERE seller.Id = ? " + "ORDER BY Name ");
 			st.setInt(1, id);
 			rs = st.executeQuery();
-			if(rs.next()) {
+			if (rs.next()) {
 				Department dep = instanciarDepartment(rs);
 				Seller seller = instanciarSeller(rs, dep);
-				
+
 				return seller;
 			}
 			return null;
-		}
-		catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new BancoException(e.getMessage());
-		}
-		finally {
+		} finally {
 			Conexao.FechamentoStatement(st);
 			Conexao.FechamentoResultSet(rs);
 		}
@@ -98,7 +93,41 @@ public class SellerDaoJDBC implements SellerDao{
 	@Override
 	public List<Seller> findAll() {
 		
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conexao.prepareStatement(
+					"SELECT seller.*,department.Name as DepName " 
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id " 
+					+ "ORDER BY Name ");
+
+			rs = st.executeQuery();
+
+			List<Seller> list = new ArrayList<>();
+			Map<Integer, Department> map = new HashMap<>();
+
+			while (rs.next()) {
+
+				Department dep = map.get(rs.getInt("DepartmentId"));
+
+				if (dep == null) {
+					dep = instanciarDepartment(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+
+				Seller seller = instanciarSeller(rs, dep);
+				list.add(seller);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new BancoException(e.getMessage());
+		} finally {
+			Conexao.FechamentoStatement(st);
+			Conexao.FechamentoResultSet(rs);
+		}
+
 	}
 
 	@Override
@@ -107,37 +136,32 @@ public class SellerDaoJDBC implements SellerDao{
 		ResultSet rs = null;
 		try {
 			st = conexao.prepareStatement(
-					"SELECT seller.*,department.Name as DepName "
-					+ "FROM seller INNER JOIN department "
-					+ "ON seller.DepartmentId = department.Id "
-					+ "WHERE DepartmentId = ? "
-					+ "ORDER BY Name ");
-			
+					"SELECT seller.*,department.Name as DepName " + "FROM seller INNER JOIN department "
+							+ "ON seller.DepartmentId = department.Id " + "WHERE DepartmentId = ? " + "ORDER BY Name ");
+
 			st.setInt(1, department.getId());
-			
+
 			rs = st.executeQuery();
-			
+
 			List<Seller> list = new ArrayList<>();
 			Map<Integer, Department> map = new HashMap<>();
-			
+
 			while (rs.next()) {
-				
-				Department dep = map.get(rs.getInt("DepartmentId")); 
-				
-				if(dep == null) {
+
+				Department dep = map.get(rs.getInt("DepartmentId"));
+
+				if (dep == null) {
 					dep = instanciarDepartment(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
 				}
-				
+
 				Seller seller = instanciarSeller(rs, dep);
 				list.add(seller);
 			}
 			return list;
-		}
-		catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new BancoException(e.getMessage());
-		}
-		finally {
+		} finally {
 			Conexao.FechamentoStatement(st);
 			Conexao.FechamentoResultSet(rs);
 		}
